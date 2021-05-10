@@ -7,6 +7,6 @@ flask-caching
 pillow
 matplotlib
 h5py
-tensorflow
+tensorflow-cpu
 keras
 imageai
