@@ -6,6 +6,9 @@ from flask_uploads import UploadSet, configure_uploads, ALL
 import os
 import shutil
 import glob
+import requests
+from pathlib import Path
+
 
 
 cache = Cache(config={'CACHE_TYPE': 'null'})
@@ -17,6 +20,14 @@ configure_uploads(app, files)
 OUTPUT_PATH = './static/result_imgs/detected.png'
 roots_to_clear = [app.config['UPLOADED_FILES_DEST'], './static/result_imgs']
 
+def getModel():
+    print("here")
+    url = "https://github.com/OlafenwaMoses/ImageAI/releases/download/essentials-v5/resnet50_coco_best_v2.1.0.h5/"
+    r = requests.get(url, allow_redirects=True)
+    p = Path('model')
+    p.mkdir(exist_ok=True)
+    (p / './model.h5').open('wb').write(r.content)
+    print('done')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -53,7 +64,7 @@ def obj_detect():
         from imageai.Detection import ObjectDetection
         model = ObjectDetection()
         model.setModelTypeAsRetinaNet()
-        model.setModelPath("./model/resnet50_coco_best_v2.1.0.h5")
+        model.setModelPath("./model/model.h5")
         model.loadModel()
         detections, paths = model.detectObjectsFromImage(input_image=image_to_process,
                                                          output_image_path=OUTPUT_PATH,
@@ -85,17 +96,7 @@ def add_header(r):
 
 if __name__ == '__main__':
     # init()
+    getModel()
     app.run()
-
-
-
-
-
-
-
-
-
-
-
 
 
