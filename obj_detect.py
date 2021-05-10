@@ -14,7 +14,7 @@ cache.init_app(app)
 files = UploadSet('files', ALL)
 app.config['UPLOADED_FILES_DEST'] = './static/uploaded_imgs'
 configure_uploads(app, files)
-OUTPUT_PATH = './static/result_imgs/detected'
+OUTPUT_PATH = './static/result_imgs/detected.png'
 roots_to_clear = [app.config['UPLOADED_FILES_DEST'], './static/result_imgs']
 
 
@@ -36,7 +36,7 @@ def upload_and_preview():
         list_of_files = glob.glob(os.path.join(app.config['UPLOADED_FILES_DEST'], '*'))
         latest_file = max(list_of_files, key=os.path.getctime)
         global image_to_process
-        image_to_process = latest_file
+        image_to_process = latest_file.replace('\\', '/')
         img_to_render = os.path.join('..', latest_file)
         img_to_render = img_to_render.replace('\\', '/')
     else:
@@ -53,7 +53,7 @@ def obj_detect():
         from imageai.Detection import ObjectDetection
         model = ObjectDetection()
         model.setModelTypeAsRetinaNet()
-        model.setModelPath("./model/resnet50_coco_best_v2.0.1.h5")
+        model.setModelPath("./model/resnet50_coco_best_v2.1.0.h5")
         model.loadModel()
         detections, paths = model.detectObjectsFromImage(input_image=image_to_process,
                                                          output_image_path=OUTPUT_PATH,
